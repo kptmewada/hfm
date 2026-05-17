@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H&FM MCQ Exam Prep — All 4 Units</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f7f6f2;
+    --card: #ffffff;
+    --border: #e4e1d8;
+    --text: #1a1816;
+    --muted: #7a756d;
+    --accent: #2d5be3;
+    --correct: #1a7a4a;
+    --correct-bg: #eafaf2;
+    --correct-border: #a3d9be;
+    --wrong: #c0392b;
+    --wrong-bg: #fdf0ef;
+    --wrong-border: #f0b0ab;
+    --u1: #2d5be3; --u1-bg: #eef2fd;
+    --u2: #0e8a5f; --u2-bg: #e8f8f2;
+    --u3: #7b3fc4; --u3-bg: #f3edfb;
+    --u4: #c45c0a; --u4-bg: #fdf3ea;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .top-bar {
+    background: var(--text);
+    color: #fff;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .top-bar h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+  .top-bar span { font-family: 'DM Mono', monospace; font-size: 13px; opacity: 0.6; }
+
+  /* ── UNIT TABS ── */
+  .unit-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1.5px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .unit-tabs::-webkit-scrollbar { display: none; }
+
+  .utab {
+    padding: 13px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted);
+    border-bottom: 2.5px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .utab.active { color: var(--text); }
+  .utab[data-unit="0"].active { border-bottom-color: var(--u1); }
+  .utab[data-unit="1"].active { border-bottom-color: var(--u2); }
+  .utab[data-unit="2"].active { border-bottom-color: var(--u3); }
+  .utab[data-unit="3"].active { border-bottom-color: var(--u4); }
+  .utab:hover:not(.active) { color: var(--text); background: var(--bg); }
+
+  /* ── PROGRESS BAR ── */
+  .prog-wrap { height: 3px; background: var(--border); }
+  .prog-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; width: 0%; }
+  .prog-fill.u0 { background: var(--u1); }
+  .prog-fill.u1 { background: var(--u2); }
+  .prog-fill.u2 { background: var(--u3); }
+  .prog-fill.u3 { background: var(--u4); }
+
+  /* ── SCOREBAR ── */
+  .scorebar {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1.5px solid var(--border);
+  }
+  .scard {
+    flex: 1;
+    background: var(--card);
+    padding: 10px 16px;
+    text-align: center;
+  }
+  .scard-val { font-size: 20px; font-weight: 600; display: block; font-family: 'DM Mono', monospace; }
+  .scard-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); display: block; margin-top: 1px; }
+  .scard-val.c { color: var(--correct); }
+  .scard-val.w { color: var(--wrong); }
+
+  /* ── MAIN AREA ── */
+  .main { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 28px 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .q-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .badge-u0 { background: var(--u1-bg); color: var(--u1); }
+  .badge-u1 { background: var(--u2-bg); color: var(--u2); }
+  .badge-u2 { background: var(--u3-bg); color: var(--u3); }
+  .badge-u3 { background: var(--u4-bg); color: var(--u4); }
+
+  .q-num { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+
+  .q-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 9px; }
+
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.55;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.15s, background 0.15s;
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .opt:hover:not(.done) { border-color: #b0aaa0; background: #f0ede7; }
+
+  .opt-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: var(--card);
+  }
+
+  .opt.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct); }
+  .opt.correct .opt-key { background: var(--correct); border-color: var(--correct); color: #fff; }
+  .opt.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong); }
+  .opt.wrong .opt-key { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+  .opt.done { cursor: default; }
+
+  /* ── EXPLANATION ── */
+  .explanation {
+    margin-top: 14px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation.correct { background: var(--correct-bg); color: var(--correct); border: 1px solid var(--correct-border); }
+  .explanation.wrong { background: var(--wrong-bg); color: #6b1f18; border: 1px solid var(--wrong-border); }
+  .explanation strong { font-weight: 600; display: block; margin-bottom: 4px; }
+
+  /* ── NAVIGATION ── */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--bg); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn.primary {
+    background: var(--text);
+    color: #fff;
+    border-color: var(--text);
+  }
+  .btn.primary:hover { opacity: 0.85; }
+
+  /* ── SUMMARY ── */
+  .summary-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 28px;
+    text-align: center;
+  }
+  .summary-card h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .summary-card .sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+  .big-score {
+    font-size: 64px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .big-score.great { color: var(--correct); }
+  .big-score.ok { color: #b07d00; }
+  .big-score.poor { color: var(--wrong); }
+  .grade-label { font-size: 14px; margin-bottom: 28px; font-weight: 500; }
+  .unit-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+  .ub-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+  }
+  .ub-score { font-family: 'DM Mono', monospace; font-weight: 500; }
+  .summary-btns { display: flex; gap: 10px; justify-content: center; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:600px){
+    .top-bar { padding: 14px 16px; }
+    .main { padding: 20px 12px 60px; }
+    .q-card { padding: 20px 16px 16px; }
+    .scard-val { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>H&FM — MCQ Exam Preparation</h1>
+  <span id="global-score">0 / 65 answered</span>
+</div>
+
+<div class="unit-tabs" id="unit-tabs"></div>
+<div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+
+<div class="scorebar">
+  <div class="scard"><span class="scard-val" id="s-ans">0/0</span><span class="scard-lbl">This unit</span></div>
+  <div class="scard"><span class="scard-val c" id="s-cor">0</span><span class="scard-lbl">Correct (all)</span></div>
+  <div class="scard"><span class="scard-val w" id="s-wrg">0</span><span class="scard-lbl">Wrong (all)</span></div>
+  <div class="scard"><span class="scard-val" id="s-pct">—</span><span class="scard-lbl">Overall %</span></div>
+</div>
+
+<div class="main" id="main-area"></div>
+
+<script>
+const UNITS = [
+  {
+    name: "Unit 1: Nutrition",
+    short: "Nutrition",
+    qs: [
+      {q:"According to WHO (2023), nutrition is best described as:",o:["Only the study of vitamins and minerals","The intake of food in relation to the body's dietary needs — a cornerstone of health and disease prevention","A synonym for dieting","Exclusively the measurement of caloric intake"],a:1,exp:"WHO (2023) defines nutrition as the intake of food considered in relation to the body's dietary needs, emphasizing its role as a cornerstone of good health, disease prevention, and longevity."},
+      {q:"Which historical figure first coined the term 'vitamine'?",o:["Hippocrates","Antoine Lavoisier","Casimir Funk","James Lind"],a:2,exp:"Casimir Funk coined the term 'vitamine' in 1912, beginning the era of vitamin discovery. Hippocrates said 'Let food be thy medicine'; Lavoisier linked food energy to metabolism; Lind conducted the first dietary clinical trial (scurvy)."},
+      {q:"What is the energy value of 1 gram of dietary fat?",o:["4 kcal/g","7 kcal/g","9 kcal/g","11 kcal/g"],a:2,exp:"Fats provide 9 kcal/g — the most energy-dense macronutrient. Both carbohydrates and proteins provide 4 kcal/g. Alcohol provides 7 kcal/g."},
+      {q:"The Acceptable Macronutrient Distribution Range (AMDR) for carbohydrates is:",o:["10–35% of total energy","20–35% of total energy","45–65% of total energy","55–75% of total energy"],a:2,exp:"Carbohydrates: AMDR 45–65% | Protein: 10–35% | Fat: 20–35%. The minimum RDA for carbohydrates is 130g/day (obligatory brain fuel)."},
+      {q:"How many essential amino acids (EAAs) must be obtained from the diet?",o:["6","9","11","20"],a:1,exp:"There are 9 EAAs: Histidine, Isoleucine, Leucine, Lysine, Methionine, Phenylalanine, Threonine, Tryptophan, Valine. All 20 amino acids exist, but only 9 are dietary-essential."},
+      {q:"Kwashiorkor is characterized by:",o:["Total caloric and protein starvation leading to severe muscle wasting","Protein deficiency with adequate caloric intake — causing oedema, fatty liver, dermatitis","Iron deficiency causing pallor and fatigue","Vitamin C deficiency causing bleeding gums"],a:1,exp:"Kwashiorkor = protein deficiency with adequate calories. Signs: oedema, fatty liver, dermatitis, hair changes. Marasmus = total starvation (calories + protein), causing muscle wasting and cachexia."},
+      {q:"Which BMR equation is recommended by the Academy of Nutrition & Dietetics as most accurate for the general population?",o:["Harris-Benedict (1919, revised 1984)","Katch-McArdle equation","Mifflin-St Jeor equation (1990)","Cunningham equation"],a:2,exp:"Mifflin-St Jeor (1990) is the most accurate (±10%) for the general population and is recommended by the AND. Harris-Benedict overestimates by ~5% in obese individuals."},
+      {q:"BMR (Basal Metabolic Rate) typically represents what percentage of Total Daily Energy Expenditure (TDEE)?",o:["20–30%","40–50%","60–70%","80–90%"],a:2,exp:"TDEE = BMR (60–70%) + Thermic Effect of Food/TEF (8–10%) + Exercise/Activity (20–30%). BMR is the largest and least variable component."},
+      {q:"Deficiency of Vitamin C (Ascorbic acid) causes which disease?",o:["Rickets","Scurvy","Pellagra","Beriberi"],a:1,exp:"Scurvy = Vitamin C deficiency. Signs: bleeding gums, poor wound healing, fatigue, joint pain. Historically affected sailors on long voyages lacking citrus fruits."},
+      {q:"Vitamin D deficiency in children causes:",o:["Osteomalacia","Rickets","Xerophthalmia","Pellagra"],a:1,exp:"Rickets (children) = Vitamin D deficiency → bow legs, soft bones, delayed bone development. In adults, Vitamin D deficiency causes Osteomalacia (soft bones) and muscle weakness."},
+      {q:"Pellagra is caused by deficiency of which B-vitamin, and is characterized by the '4 Ds'?",o:["Vitamin B1 (Thiamine)","Vitamin B2 (Riboflavin)","Vitamin B3 (Niacin)","Vitamin B6 (Pyridoxine)"],a:2,exp:"Niacin (B3) deficiency → Pellagra. The 4 Ds: Dermatitis (sun-exposed skin), Diarrhoea, Dementia, Death. Sources: meat, fish, poultry, peanuts, whole grains."},
+      {q:"Beriberi is caused by deficiency of:",o:["Vitamin B2 (Riboflavin)","Vitamin B1 (Thiamine)","Vitamin B12 (Cobalamin)","Vitamin K"],a:1,exp:"Thiamine (B1) deficiency → Beriberi. Wet Beriberi: cardiac failure, oedema. Dry Beriberi: peripheral neuropathy. Common in populations reliant on polished white rice."},
+      {q:"A BMI of 32 kg/m² falls under which WHO classification?",o:["Overweight (Pre-obese): BMI 25–29.9","Obese Class I: BMI 30–34.9","Obese Class II: BMI 35–39.9","Obese Class III (Morbid): BMI ≥40"],a:1,exp:"BMI 30.0–34.9 = Obese Class I (high risk). BMI 32 falls here. WHO Asian cut-offs differ: overweight ≥23, obese ≥27.5 kg/m² due to higher metabolic risk at lower BMI."},
+      {q:"The DASH diet reduces systolic blood pressure by approximately how much?",o:["2–4 mmHg","5–7 mmHg","8–14 mmHg","15–20 mmHg"],a:2,exp:"DASH diet reduces systolic BP by 8–14 mmHg — comparable to a single antihypertensive medication. Key nutrients: Potassium (4700 mg/day), Calcium, Magnesium; limit sodium (<1500 mg/day)."},
+      {q:"The Mediterranean diet reduces cardiovascular disease (CVD) risk by approximately:",o:["10%","20%","30%","50%"],a:2,exp:"The PREDIMED study (2013/2018) demonstrated that the Mediterranean diet reduces CVD by ~30%. It emphasizes olive oil, fish, vegetables, legumes, whole grains, and moderate wine."},
+      {q:"A food with Glycaemic Index (GI) below 55 is classified as:",o:["High GI","Medium GI","Low GI","Very low GI"],a:2,exp:"GI classification: Low = <55 (preferred — lentils, oats, milk). Medium = 56–69. High = ≥70 (white bread, white rice, most breakfast cereals). Low-GI foods improve blood sugar control."},
+      {q:"The loading protocol for creatine monohydrate involves:",o:["5g/day for 28 days","10g/day for 7 days","20g/day (divided into 4×5g doses) for 5–7 days","40g/day for 2 days"],a:2,exp:"Creatine loading: 20g/day × 5–7 days (4×5g doses) → rapid phosphocreatine saturation. Maintenance: 3–5g/day. Alternatively, 3–5g/day for 28 days achieves same steady-state without loading."},
+      {q:"Approximately how many kilocalories equal 1 kilogram of body fat?",o:["3,500 kcal","5,000 kcal","7,700 kcal","9,000 kcal"],a:2,exp:"~7,700 kcal = 1 kg body fat. A daily deficit of 500 kcal = ~0.5 kg/week weight loss. A deficit of 1,000 kcal/day = ~1 kg/week (safe rate)."},
+      {q:"Which nutrient/compound enhances the absorption of non-haem (plant-source) iron?",o:["Calcium","Vitamin D","Vitamin C (Ascorbic acid)","Vitamin E"],a:2,exp:"Vitamin C converts Fe³⁺ → Fe²⁺ (more absorbable form), enhancing non-haem iron absorption significantly. Inhibitors: tannins (tea/coffee), calcium, phytates. Cook in cast-iron pans for extra dietary iron."},
+      {q:"What is the effect of trans fats (TFAs) on blood cholesterol?",o:["Raise HDL and lower LDL cholesterol","Raise LDL and lower HDL cholesterol — highest CVD risk of any dietary fat","Raise LDL only, with no effect on HDL","Lower both LDL and HDL equally"],a:1,exp:"Trans fats raise LDL ('bad') AND lower HDL ('good') — making them the most harmful dietary fat for cardiovascular health. WHO REPLACE initiative targeted global elimination by 2023."},
+    ]
+  },
+  {
+    name: "Unit 2: Training",
+    short: "Training",
+    qs: [
+      {q:"The principle of progressive overload states that:",o:["Exercise intensity should remain constant once a fitness level is achieved","Training stimulus must be gradually increased over time to continue eliciting physiological adaptation","Athletes should train at 100% maximum effort every session","Rest is more critical than training intensity for adaptation"],a:1,exp:"Progressive overload: systematically increase volume, intensity, or frequency to continually challenge the body beyond its current capacity. Without overload, adaptation plateaus."},
+      {q:"The FITT principle of exercise prescription stands for:",o:["Force, Intensity, Timing, Technique","Frequency, Intensity, Time, Type","Function, Integration, Training, Target","Frequency, Interval, Tension, Threshold"],a:1,exp:"FITT = Frequency (how often per week), Intensity (how hard — % HRmax, RPE), Time (duration per session), Type (modality — aerobic, resistance, flexibility). Used to prescribe and progress exercise."},
+      {q:"VO2max is defined as:",o:["The maximum speed an athlete can sustain for 60 minutes","The maximum volume of oxygen the body can use per minute during maximal exercise","The average oxygen consumption at complete rest","The minimum oxygen required to sustain anaerobic metabolism"],a:1,exp:"VO2max = maximal oxygen uptake (ml/kg/min). It is the gold standard measure of cardiorespiratory fitness. Elite endurance athletes: 70–90 ml/kg/min; sedentary adults: 30–40 ml/kg/min."},
+      {q:"Type I (slow-twitch) muscle fibres are characterized by:",o:["High force production, fast contraction speed, low fatigue resistance","Low force production, slow contraction, high oxidative capacity — fatigue resistant","High force production, fast contraction, high fatigue resistance","Intermediate properties between Type I and Type IIx"],a:1,exp:"Type I = slow-twitch: high mitochondrial density, fat oxidation, fatigue-resistant. Ideal for endurance. Type IIx = fast-twitch: high force, glycolytic, fatigue quickly. Ideal for power/sprinting."},
+      {q:"EPOC (Excess Post-exercise Oxygen Consumption) refers to:",o:["Oxygen debt that occurs before exercise begins during the warm-up","Elevated oxygen consumption after exercise to restore the body to pre-exercise homeostasis — the 'afterburn effect'","Reduced oxygen utilization during low-intensity steady-state training","Maximum oxygen consumption measured during an all-out sprint test"],a:1,exp:"EPOC = 'afterburn effect'. After intense exercise, the body consumes extra oxygen to restore ATP-PC stores, clear lactate, reduce core temperature, and repair tissue. HIIT creates greater EPOC than steady-state cardio."},
+      {q:"Periodization in athletic training refers to:",o:["Restricting exercise sessions to exactly 30-minute periods","Systematic variation of training variables (volume, intensity, frequency) in planned phases to optimize performance and prevent overtraining","Training exclusively in the morning hours for hormonal optimization","Performing only one type of exercise modality per training session"],a:1,exp:"Periodization = planned, systematic manipulation of training variables across macrocycles (yearly), mesocycles (4–6 weeks), and microcycles (weekly) to peak performance, prevent overtraining, and manage fatigue."},
+      {q:"The SAID principle (Specific Adaptation to Imposed Demands) means:",o:["All exercise types produce identical physiological adaptations","The body adapts specifically to the TYPE of training performed — adaptations are exercise-mode specific","Recovery specificity is more important than training specificity","Nutrition specificity overrides training specificity in determining adaptations"],a:1,exp:"SAID = Specificity principle. Swimmers adapt for swimming, not running. Resistance training builds strength, not primarily aerobic capacity. Exercise prescription must match performance goals."},
+      {q:"What happens to VO2max during a period of detraining (cessation of exercise)?",o:["VO2max continues to increase for several weeks before declining","VO2max begins declining within 2 weeks and can return to pre-training levels within months","VO2max remains stable for 3 months then declines gradually","VO2max only declines in older adults, not in younger individuals"],a:1,exp:"Detraining: VO2max begins declining within 2–4 weeks of inactivity. Muscle strength is relatively better preserved (weeks to months). Regular, consistent training is essential to maintain adaptations."},
+      {q:"WHO 2020 guidelines recommend adults (18–64 yrs) perform at least how much moderate-intensity aerobic activity per week?",o:["60–90 minutes","100–120 minutes","150–300 minutes","300–450 minutes"],a:2,exp:"WHO 2020: Adults should do ≥150–300 min/week of moderate aerobic activity OR ≥75–150 min vigorous intensity (or equivalent combination), PLUS muscle-strengthening activities ≥2 days/week."},
+      {q:"During Zone 2 training (60–70% HRmax), which fuel source is predominantly utilized?",o:["Stored glycogen and blood glucose exclusively","Creatine phosphate (PCr system)","Fat (free fatty acids) as the primary fuel source","Dietary protein via gluconeogenesis"],a:2,exp:"Zone 2 = aerobic fat oxidation zone. Fat is the dominant fuel. As intensity increases above the lactate threshold, carbohydrate (glycogen) becomes the primary fuel. Zone 2 training improves metabolic flexibility and mitochondrial density."},
+      {q:"The lactate threshold represents:",o:["The maximum heart rate achievable during all-out exercise","The exercise intensity at which lactate accumulation in the blood begins to exceed the rate of clearance","The minimum protein intake required for muscle protein synthesis","The resting heart rate observed in highly trained endurance athletes"],a:1,exp:"Lactate threshold (LT): the exercise intensity where lactate production exceeds clearance — marked by an exponential rise in blood lactate. Training raises LT, allowing higher intensity exercise to be sustained."},
+      {q:"The most common formula used to estimate maximum heart rate (HRmax) is:",o:["200 − age","220 − age","240 − (age × 0.5)","180 − (age × 0.65)"],a:1,exp:"HRmax = 220 − age is the most widely used formula. Note: it has significant individual variability (±10–12 bpm). More accurate methods: Tanaka formula (208 − 0.7×age) or graded exercise testing."},
+      {q:"Compared to moderate-intensity steady-state cardio, HIIT burns approximately how much more calories?",o:["5–10% more","10–15% more","25–30% more","50–60% more"],a:2,exp:"HIIT burns ~25–30% more calories than moderate steady-state cardio during similar durations. Combined with significant EPOC (afterburn), HIIT is highly time-efficient for improving cardiorespiratory fitness and body composition."},
+      {q:"The primary physiological benefits of a proper warm-up before exercise include:",o:["Maximizing glycogen depletion to force fat burning during training","Increasing core and muscle temperature, enhancing muscle elasticity, and preparing the neuromuscular system — reducing injury risk","Reducing heart rate to lower cardiovascular stress during the session","Depleting ATP stores to maximise EPOC during the workout"],a:1,exp:"Warm-up: raises core/muscle temperature → improves enzyme activity, muscle elasticity, nerve conduction velocity, joint lubrication, and cardiovascular response. Reduces injury risk and improves performance readiness."},
+      {q:"Overtraining syndrome (OTS) is characterized by:",o:["Rapid strength and performance gains that exceed normal physiological expectations","Persistent performance decline, fatigue, mood disturbance, and immune suppression despite adequate rest","Increased lean muscle mass combined with significantly reduced body fat percentage","Higher-than-normal VO2max readings accompanied by increased training motivation"],a:1,exp:"OTS: performance decrements + persistent fatigue + mood disturbance (depression, irritability) + immune suppression despite ≥2 weeks adequate rest. Prevention: periodization, sleep (7–9 hrs), caloric adequacy, and planned recovery."},
+    ]
+  },
+  {
+    name: "Unit 3: Psychology",
+    short: "Psychology",
+    qs: [
+      {q:"According to WHO (2022), mental health is defined as:",o:["The complete absence of all mental disorders and psychological symptoms","A state of mental well-being enabling people to cope with stresses, realise their abilities, learn and work well, and contribute to community","Psychological stability maintained exclusively through pharmacological intervention","Freedom from all forms of anxiety, stress, and negative emotion"],a:1,exp:"WHO 2022: 'A state of mental well-being that enables people to cope with the stresses of life, realise their abilities, learn well and work well, and contribute to their community.' Mental health ≠ absence of illness."},
+      {q:"In Seligman's PERMA model of wellbeing, 'E' stands for:",o:["Exercise and physical activity","Empathy towards others","Engagement (flow state — deep absorption in meaningful activity)","Emotional regulation skills"],a:2,exp:"PERMA: P=Positive Emotions (joy, gratitude, hope), E=Engagement (flow), R=Relationships (social connection), M=Meaning (belonging to something bigger), A=Accomplishment (achieving goals). Widely used in positive psychology."},
+      {q:"Which of the following is NOT one of Ryff's six dimensions of psychological wellbeing?",o:["Self-acceptance","Personal growth","Financial stability","Purpose in life"],a:2,exp:"Ryff's Six Factors: Self-Acceptance, Personal Growth, Purpose in Life, Environmental Mastery, Autonomy, Positive Relationships. Financial stability is NOT included — it's an external resource, not a dimension of psychological wellbeing."},
+      {q:"Hans Selye's General Adaptation Syndrome (GAS) occurs in which correct sequence of stages?",o:["Resistance → Alarm → Exhaustion","Alarm → Exhaustion → Resistance","Alarm → Resistance → Exhaustion","Exhaustion → Resistance → Alarm"],a:2,exp:"GAS: (1) Alarm — fight-or-flight; surge of cortisol and adrenaline. (2) Resistance — body attempts adaptation; ongoing arousal. (3) Exhaustion — resources depleted; immunity compromised; burnout and breakdown."},
+      {q:"'Eustress' is best described as:",o:["Chronic, debilitating negative stress that impairs health and cognitive function","Positive, short-term, motivating stress that facilitates performance, growth, and resilience","The Exhaustion stage of Selye's General Adaptation Syndrome","A type of anxiety disorder triggered by academic or occupational pressure"],a:1,exp:"Eustress (Selye): positive stress — motivating, performance-enhancing, growth-promoting. Short duration. Distress: negative, chronic, health-impairing. Both activate the same physiological stress response (HPA axis)."},
+      {q:"The Yerkes-Dodson Law describes the relationship between:",o:["Exercise intensity and muscle hypertrophy over time","Arousal/stress level and performance — an inverted-U relationship","Sleep quality and next-day cognitive performance","Nutritional status and emotional regulation capacity"],a:1,exp:"Yerkes-Dodson: moderate arousal = optimal performance (the 'sweet spot'). Under-arousal = boredom, low motivation. Over-arousal = anxiety, choking, impaired decision-making. Complex tasks require lower optimal arousal."},
+      {q:"Hans Selye (1936) defined stress as:",o:["A state of chronic anxiety and persistent worry about future events","The non-specific response of the body to any demand for change","A purely psychological phenomenon with no measurable physiological component","The consequence of inadequate time management and poor planning"],a:1,exp:"Selye's landmark definition (1936): 'The non-specific response of the body to any demand for change.' This applies to both positive stressors (eustress) and negative ones (distress)."},
+      {q:"According to WHO (2022), approximately how many people globally live with a mental disorder?",o:["~200 million (approximately 1 in 40 people)","~350 million (approximately 1 in 20 people)","~970 million (approximately 1 in 8 people)","~1.5 billion (approximately 1 in 5 people)"],a:2,exp:"WHO 2022: ~1 in 8 people globally (~970 million) live with a mental disorder. Depression and anxiety are the most common. The COVID-19 pandemic significantly increased prevalence."},
+      {q:"Generalized Anxiety Disorder (GAD) is primarily characterized by:",o:["Sudden, intense fear episodes (panic attacks) lasting minutes","Persistent, excessive, uncontrollable worry about multiple areas of life lasting ≥6 months and impairing functioning","Fear specifically triggered by social evaluation situations","Irrational, intense fear of a specific object or situation"],a:1,exp:"GAD: excessive, difficult-to-control worry about multiple domains (work, health, finances, relationships) persisting ≥6 months with significant functional impairment. Affects ~4% of the global population yearly."},
+      {q:"The biopsychosocial model of mental health considers the interaction of:",o:["Biological, emotional, and physical fitness factors","Psychological, spiritual, and environmental domains","Biological (genetics, neurochemistry), psychological (cognition, coping), and social (relationships, culture, SES) factors","Genetic, hormonal, and purely neurological factors alone"],a:2,exp:"Biopsychosocial model: Biological (genetics, brain chemistry, hormones, illness), Psychological (personality, cognition, coping, trauma), Social (family dynamics, culture, SES, life events) — all interact to determine mental health outcomes."},
+      {q:"The STAI (State-Trait Anxiety Inventory) was developed by which researcher?",o:["Lazarus & Folkman (1984)","Hans Selye (1936)","Spielberger (1970)","Martin Seligman (1999)"],a:2,exp:"STAI developed by Spielberger (1970). 40 items total: 20 measure State Anxiety (current, transient) and 20 measure Trait Anxiety (dispositional tendency). Widely used in sports psychology and clinical research."},
+      {q:"Lazarus & Folkman's Transactional Model (1984) states that psychological stress arises when:",o:["Cortisol levels exceed a biologically critical threshold for an extended period","Environmental demands are appraised as exceeding an individual's perceived coping resources","An individual scores above the 75th percentile on a standardised trait anxiety inventory","Social support is completely absent from an individual's life circumstances"],a:1,exp:"Lazarus & Folkman: stress = a TRANSACTION between the person and environment. Primary appraisal (is this threatening?) + Secondary appraisal (can I cope?). When demands exceed perceived resources, stress results."},
+      {q:"'Anger-In' in anger expression theory refers to:",o:["Sudden explosive outbursts of anger expressed outwardly (interpersonal risk)","Anger that is suppressed and held internally — associated with psychosomatic health risks","Healthy expression of anger through assertive communication","Anger that is controlled and redirected into productive problem-solving"],a:1,exp:"Anger-In = suppressed/internalised anger. Associated with psychosomatic risks (hypertension, GI issues, cardiovascular disease). Anger-Out = externally expressed (interpersonal conflict risk). Anger Control = healthy regulation."},
+      {q:"In the mental health continuum model, the state of 'languishing' is characterized by:",o:["High energy, positive emotions, resilience, purpose, and engagement with life","Mild difficulties and occasional stress with some functional impairment","Absence of positive mental health, low mood, detachment, emptiness — 'going through the motions'","Significant clinical distress requiring urgent professional intervention"],a:2,exp:"Languishing (Keyes): the 'empty feeling' of neither ill nor flourishing. Characterized by detachment, emptiness, low motivation, and absence of positive wellbeing. Not a disorder, but requires attention."},
+      {q:"According to WHO data, approximately how many deaths annually are attributed to suicide globally?",o:["~200,000 deaths per year","~350,000 deaths per year","~700,000 deaths per year","~1.2 million deaths per year"],a:2,exp:"WHO: ~700,000 suicide deaths per year — the 4th leading cause of death in 15–29 year-olds globally. Mental health receives only ~2% of health budgets in most nations despite this burden."},
+    ]
+  },
+  {
+    name: "Unit 4: Injuries",
+    short: "Injuries",
+    qs: [
+      {q:"The RICE protocol for acute soft tissue injuries stands for:",o:["Run, Ice, Compress, Elevate","Rest, Ice, Compression, Elevation","Rest, Immobilise, Cool, Exercise","Reduce, Ice, Compress, Evaluate"],a:1,exp:"RICE: Rest (stop activity), Ice (15–20 min every 2 hrs for first 48 hrs), Compression (crepe bandage to control swelling), Elevation (above heart level to reduce pooling). Immediate management for sprains, strains, and contusions."},
+      {q:"The HARM acronym describes things to AVOID in the first 72 hours after a soft tissue injury. It stands for:",o:["Heat, Alcohol, Running, Massage","Hydration, Aspirin, Rest, Motion","Heat, Activity, Rest, Medication","Humidity, Alcohol, Running, Medication"],a:0,exp:"HARM = Heat (increases bleeding/swelling), Alcohol (increases bleeding, impairs healing), Running (re-injury risk, increases inflammation), Massage (increases bruising and swelling in acute phase). Avoid all in first 72 hours."},
+      {q:"A Greenstick fracture is best described as:",o:["A fracture where bone shatters into multiple fragments from high-energy trauma","An incomplete fracture where the bone bends on one side but does not break completely — common in children","A fracture occurring in diseased bone weakened by osteoporosis or tumour","A hairline crack caused by cumulative repetitive loading in athletes"],a:1,exp:"Greenstick fracture: incomplete — like bending a green twig (it splints on one side). Common in children because their bones are more flexible/porous than adult bone. Typically heals well with casting."},
+      {q:"An Open (Compound) fracture is characterized by:",o:["Bone broken but skin intact; no external wound visible","Bone end protrudes through or near the skin surface — creating an open wound and very high infection risk","An incomplete fracture in a developing child's bone that does not fully break","A hairline crack visible only on MRI or bone scan imaging"],a:1,exp:"Open/compound fracture: bone end protrudes through skin → contaminated wound → HIGH infection risk (osteomyelitis). Requires immediate emergency management, surgical debridement, and often internal fixation."},
+      {q:"By definition, a sprain is a stretch or tear of:",o:["A muscle or its tendinous attachment (muscle-to-bone tissue)","A ligament — the fibrous connective tissue connecting bone to bone","The joint capsule, meniscus, or articular cartilage specifically","The bursae surrounding a joint"],a:1,exp:"SPRAIN = LIGAMENT injury (bone-to-bone). Causes: forced joint movement beyond normal range. Common sites: ankle (most common), knee (ACL, MCL), wrist. Compare with STRAIN = muscle/tendon injury."},
+      {q:"By definition, a strain is a stretch or tear of:",o:["A ligament connecting two bones across a joint","The joint meniscus or articular cartilage","A muscle or tendon (muscle-to-bone connective tissue)","Articular cartilage or subchondral bone"],a:2,exp:"STRAIN = MUSCLE or TENDON injury. Caused by: overstretching or violent muscular contraction. Common sites: hamstring, quadriceps, gastrocnemius, lower back (lumbar erectors). Compare with SPRAIN = ligament injury."},
+      {q:"A Grade III ligament sprain is defined as:",o:["Microscopic ligament fibre tearing with maintained joint stability — 1–2 weeks recovery","Partial ligament tear with moderate swelling and some joint instability — 3–6 weeks recovery","Complete ligament rupture with gross joint instability — may require surgical reconstruction; 3–6 months","A bone avulsion at the ligament attachment point with no joint instability"],a:2,exp:"Grade III sprain = complete ligament rupture. Significant swelling, bruising, gross instability. Requires orthopaedic referral; surgical reconstruction (e.g., ACL reconstruction) may be needed. Recovery: 3–6 months."},
+      {q:"Scoliosis is defined as:",o:["An exaggerated forward (convex) curvature of the thoracic spine — 'hunchback'","An exaggerated inward (concave) curvature of the lumbar spine — 'hollow back'","A lateral (sideways) curvature of the spine — can be S-shaped or C-shaped","A pathological flattening of all normal spinal curves"],a:2,exp:"Scoliosis = lateral curvature of the spine. Can be structural (fixed bony deformity) or functional (posture-related). Most common in adolescent females (idiopathic scoliosis). Diagnosis: Cobb angle on X-ray."},
+      {q:"Kyphosis is defined as:",o:["A lateral deviation of the spine to the left or right","An exaggerated inward (concave) curvature of the lumbar spine","An exaggerated outward (convex) rounding of the thoracic spine — commonly called 'hunchback'","Pathological flattening of the normal lumbar lordotic curve"],a:2,exp:"Kyphosis = excessive thoracic spine rounding (convex posteriorly). Types: Postural kyphosis (reversible), Scheuermann's kyphosis (structural, adolescents), Degenerative kyphosis (elderly). Management: physiotherapy, posture correction."},
+      {q:"Lordosis refers to:",o:["Lateral deviation of the spine to one side","Excessive outward (convex) curvature of the thoracic spine","An exaggerated inward (concave) curvature of the lumbar spine — 'hollow back' or 'swayback'","Pathological flattening of all normal spinal curvature"],a:2,exp:"Lordosis = exaggerated lumbar inward curve. 'Hollow back' or 'swayback.' Can be postural (weak abdominals, tight hip flexors) or structural. Associated with chronic lower back pain and anterior pelvic tilt."},
+      {q:"A Comminuted fracture is one where:",o:["The bone bends but does not break completely, common in children","The bone shatters into three or more separate fragments at the fracture site","A stress fracture results in a hairline crack with no displacement","The bone ends override each other due to muscle pull (impacted fracture)"],a:1,exp:"Comminuted fracture: bone shatters into 3+ fragments. Typically from high-energy trauma (MVA, falls from height). Difficult to manage — often requires surgical fixation (ORIF) with plates, screws, or intramedullary nails."},
+      {q:"An abrasion wound is described as:",o:["A deep, narrow penetrating wound with a small entry point and high infection risk","A jagged tear through all skin layers requiring sutures or staples for closure","A superficial wound where the epidermis is scraped away ('road rash') — usually from friction","A wound caused by blunt force that does not break the skin surface"],a:2,exp:"Abrasion = superficial scraping of the epidermis (e.g., 'road rash' from a fall on rough surface). Management: clean thoroughly, irrigate, antiseptic dressing. Usually heals without sutures. Risk: embedded debris."},
+      {q:"A stress fracture is best described as:",o:["A fracture caused by a single, sudden high-impact traumatic event","A complete bone break in bone weakened by metabolic disease (osteoporosis, tumour)","A hairline crack resulting from cumulative repetitive loading that exceeds the bone's remodelling capacity — common in runners","A fracture with bone fragments displaced by more than 2mm from the normal anatomical position"],a:2,exp:"Stress fracture = cumulative microtrauma from repetitive loading (running, jumping) that exceeds remodelling capacity. Common sites: tibia, metatarsals, femur, navicular. High-risk: female athletes, low bone density, nutritional deficiency."},
+      {q:"In a Grade I muscle strain, approximately what percentage of muscle fibres are disrupted?",o:["Less than 5% of muscle fibres torn","5–50% of muscle fibres torn","Greater than 50% of muscle fibres torn","Complete muscle rupture with no intact fibres remaining"],a:0,exp:"Grade I strain: < 5% fibres torn. Mild pain, near-normal function, minimal swelling, minimal bruising. Recovery: 1–2 weeks. Grade II: 5–50% torn (moderate). Grade III: >50% / complete tear (severe — may need surgery)."},
+      {q:"The primary distinguishing feature between a sprain and a strain in clinical assessment is:",o:["Sprains are always more painful and take longer to heal than strains","A sprain involves a LIGAMENT (bone-to-bone); a strain involves a MUSCLE or TENDON (muscle-to-bone)","Strains can only occur in the lower limbs; sprains can occur anywhere","Sprains can be diagnosed without imaging; strains always require MRI confirmation"],a:1,exp:"The FUNDAMENTAL distinction: SPRAIN = ligament. STRAIN = muscle/tendon. Different mechanisms, different tissues, different rehabilitation. This distinction is central to all sports medicine and first aid assessment."},
+    ]
+  }
+];
+
+let currentUnit = 0;
+let currentQ = 0;
+let answers = {};
+let scores = UNITS.map(() => ({ c: 0, w: 0, done: 0 }));
+
+const badgeClass = ['badge-u0','badge-u1','badge-u2','badge-u3'];
+const progClass = ['u0','u1','u2','u3'];
+
+function switchUnit(u) {
+  currentUnit = u;
+  currentQ = 0;
+  renderTabs();
+  renderQ();
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById('unit-tabs');
+  tabsEl.innerHTML = UNITS.map((u, i) =>
+    `<button class="utab${i === currentUnit ? ' active' : ''}" data-unit="${i}" onclick="switchUnit(${i})">${u.short}</button>`
+  ).join('');
+}
+
+function updateStats() {
+  const u = scores[currentUnit];
+  const qs = UNITS[currentUnit].qs;
+  document.getElementById('s-ans').textContent = `${u.done}/${qs.length}`;
+  const tc = scores.reduce((a, s) => a + s.c, 0);
+  const tw = scores.reduce((a, s) => a + s.w, 0);
+  const tot = tc + tw;
+  document.getElementById('s-cor').textContent = tc;
+  document.getElementById('s-wrg').textContent = tw;
+  document.getElementById('s-pct').textContent = tot > 0 ? Math.round(tc / tot * 100) + '%' : '—';
+  const totalAnswered = scores.reduce((a, s) => a + s.done, 0);
+  const totalQs = UNITS.reduce((a, u) => a + u.qs.length, 0);
+  document.getElementById('global-score').textContent = `${totalAnswered} / ${totalQs} answered`;
+  const pct = u.done / qs.length * 100;
+  const prog = document.getElementById('prog');
+  prog.style.width = pct + '%';
+  prog.className = 'prog-fill ' + progClass[currentUnit];
+}
+
+function renderQ() {
+  const qs = UNITS[currentUnit].qs;
+  if (currentQ >= qs.length) { renderSummary(); return; }
+  const q = qs[currentQ];
+  const key = currentUnit + '-' + currentQ;
+  const prev = answers[key];
+  const area = document.getElementById('main-area');
+
+  const optsHTML = q.o.map((opt, i) => {
+    let cls = 'opt';
+    if (prev !== undefined) {
+      cls += ' done';
+      if (i === q.a) cls += ' correct';
+      else if (i === prev && prev !== q.a) cls += ' wrong';
+    }
+    return `<button class="${cls}" onclick="choose(${i})"><span class="opt-key">${['A','B','C','D'][i]}</span><span>${opt}</span></button>`;
+  }).join('');
+
+  let expHTML = '';
+  if (prev !== undefined) {
+    const isCorrect = prev === q.a;
+    expHTML = `<div class="explanation show ${isCorrect ? 'correct' : 'wrong'}">
+      <strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect — correct answer: ' + ['A','B','C','D'][q.a]}</strong>${q.exp}
+    </div>`;
+  }
+
+  area.innerHTML = `
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-badge ${badgeClass[currentUnit]}">${UNITS[currentUnit].name}</span>
+        <span class="q-num">Q ${currentQ + 1} of ${qs.length}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optsHTML}</div>
+      ${expHTML}
+      <div class="nav-row">
+        <button class="btn" onclick="prevQ()" ${currentQ === 0 ? 'disabled' : ''}>← Previous</button>
+        <span style="font-size:13px;color:var(--muted);font-family:'DM Mono',monospace">${currentQ + 1} / ${qs.length}</span>
+        <button class="btn primary" onclick="nextQ()" ${prev === undefined ? 'disabled' : ''}>${currentQ < qs.length - 1 ? 'Next →' : 'Finish unit →'}</button>
+      </div>
+    </div>
+  `;
+  updateStats();
+}
+
+function choose(i) {
+  const key = currentUnit + '-' + currentQ;
+  if (answers[key] !== undefined) return;
+  const q = UNITS[currentUnit].qs[currentQ];
+  answers[key] = i;
+  if (i === q.a) scores[currentUnit].c++;
+  else scores[currentUnit].w++;
+  scores[currentUnit].done++;
+  renderQ();
+}
+
+function nextQ() {
+  currentQ = Math.min(currentQ + 1, UNITS[currentUnit].qs.length);
+  renderQ();
+}
+
+function prevQ() {
+  currentQ = Math.max(currentQ - 1, 0);
+  renderQ();
+}
+
+function renderSummary() {
+  const u = scores[currentUnit];
+  const pct = u.done > 0 ? Math.round(u.c / u.done * 100) : 0;
+  const gradeText = pct >= 80 ? 'Excellent — exam ready!' : pct >= 60 ? 'Good — review weak areas' : 'Needs improvement — revisit the material';
+  const pctClass = pct >= 80 ? 'great' : pct >= 60 ? 'ok' : 'poor';
+  const tc = scores.reduce((a, s) => a + s.c, 0);
+  const td = scores.reduce((a, s) => a + s.done, 0);
+  const overallPct = td > 0 ? Math.round(tc / td * 100) : 0;
+
+  const unitRows = UNITS.map((u2, i) => {
+    const s = scores[i];
+    const sp = s.done > 0 ? Math.round(s.c / s.done * 100) + '%  (' + s.c + '/' + s.done + ')' : 'Not started';
+    return `<div class="ub-row"><span>${u2.name}</span><span class="ub-score">${sp}</span></div>`;
+  }).join('');
+
+  const nextBtn = currentUnit < UNITS.length - 1
+    ? `<button class="btn primary" onclick="switchUnit(${currentUnit + 1})">Next unit →</button>`
+    : `<button class="btn primary" onclick="switchUnit(0)">Restart all</button>`;
+
+  document.getElementById('main-area').innerHTML = `
+    <div class="summary-card">
+      <h2>${UNITS[currentUnit].short} — Unit Complete</h2>
+      <p class="sub">${gradeText}</p>
+      <div class="big-score ${pctClass}">${pct}%</div>
+      <div style="font-size:14px;margin-bottom:24px;color:var(--muted)">${u.c} correct out of ${u.done} questions answered</div>
+      <div class="unit-breakdown">${unitRows}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Overall across all units: <strong>${overallPct}%</strong> (${tc}/${td})</div>
+      <div class="summary-btns">
+        <button class="btn" onclick="currentQ=0;renderQ()">Retry this unit</button>
+        ${nextBtn}
+      </div>
+    </div>
+  `;
+  updateStats();
+}
+
+// INIT
+renderTabs();
+renderQ();
+</script>
+</body>
+</html>
